@@ -1,7 +1,29 @@
 import morepath
+from more import static
+import bowerstatic
 
-class App(morepath.App):
+## Set up our App
+
+# class App(morepath.App):
+class App(static.StaticApp):
     pass
+
+## Basic Bower stuff
+
+bower = bowerstatic.Bower()
+# Currently configuring to look from directory where run
+components = bower.components('app', 
+                        '/home/dav/Projects/taichi-videos/bower_components')
+
+@App.static_components()
+def get_static_components():
+        return components
+
+## Site root
+
+@App.path(path='static')
+class Root(object):
+        pass
 
 @App.path(path='')
 class Root(object):
@@ -13,13 +35,11 @@ class Root(object):
 
 @App.html(model=Root)
 def hello_word(self, request):
-    file_obj = open('index.html', 'r')
-    result = file_obj.read()
-    file_obj.close()
-    #local = bower.local_components('local', components)
-    #local.component('../resources/static/style', version=None)
-    #local.component('../resources/static/bootstrap-3.3.2-dist', version=None)
-    return result #"Hello world!"
+    request.include('bootstrap')
+    # request.include('jquery/dist/jquery.min.js')
+    with open('resources/index.html', 'r') as file_obj:
+        result = file_obj.read()
+    return result
 
 class Static(object):
     def __init__(self, path):
@@ -36,8 +56,10 @@ def serve_static(self, request):
 def main():
     config=morepath.setup()
     config.scan()
+    config.scan(static)
     config.commit()
-    morepath.run(App())
+    wsgi = App()
+    morepath.run(wsgi)
 
 if __name__ == '__main__':
     main()
