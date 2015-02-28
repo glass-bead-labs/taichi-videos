@@ -7,6 +7,6 @@ setup(name='taichi_videos',
       ],
       entry_points={
          'console_scripts': [
-          'myproject-start = taichi_videos.main:main'
+          'taichi-start = taichi_videos.main:main'
           ]
       })
