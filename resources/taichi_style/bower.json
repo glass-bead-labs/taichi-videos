@@ -1,0 +1,16 @@
+{
+  "name": "taichi_style",
+  "version": "0.0.1",
+  "homepage": "https://github.com/glass-bead-labs/taichi-videos",
+  "description": "Styling for tai chi videos site",
+  "main": "taichi_style.css",
+  "license": "ISC",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
