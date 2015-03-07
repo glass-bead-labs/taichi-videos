@@ -1,4 +1,5 @@
 import os
+import logging
 from datetime import date
 import csv
 
@@ -6,6 +7,11 @@ import morepath
 from more import static
 import bowerstatic
 from morepath.security import Identity, NO_IDENTITY
+
+# This enables directive logging at app launch
+# directive_logger = logging.getLogger('morepath.directive')
+# directive_logger.addHandler(logging.StreamHandler())
+# directive_logger.setLevel(logging.DEBUG)
 
 ## Set up our App
 
@@ -23,17 +29,18 @@ components = bower.components('app',
 
 ### This stuff is just straight not working... :(
 
-# # Local components must still have a bower.json
-# local = bower.local_components('local', components)
-# local.component(os.path.join(curr_dir, 'resources/taichi_style'),
-#                 # Make the "version" change whenever code is changed
-#                 # This should be changed for "production", but we're unlikely to
-#                 # use this code in high-volume situations.
-#                 version=None)
+# Local components must still have a bower.json
+local = bower.local_components('local', components)
+local.component(os.path.join(curr_dir, 'resources/taichi_style'),
+                # Make the "version" change whenever code is changed
+                # This should be changed for "production", but we're unlikely to
+                # use this code in high-volume situations.
+                version=None)
+
 
 @App.static_components()
 def get_static_components():
-        return components
+        return local
 
 ## Site root
 
@@ -44,8 +51,8 @@ class Root(object):
 @App.html(model=Root)
 def hello_word(self, request):
     request.include('bootstrap')
-    # Not working for some reason
-    # request.include('taichi_style')
+    request.include('taichi_style')
+
     with open('resources/index.html', 'r') as file_obj:
         result = file_obj.read()
     with open('log.csv', 'a') as log:
@@ -79,12 +86,11 @@ def login_validate(self, request):
     password = p['password']
     if not user_has_password(username, password):
         return 'Sorry, invalid username/password combination'
-    
+
     @request.after
     def remember(response):
         identity = morepath.Identity(username)
         morepath.remember_identity(response, request, identity)
-    #return str("blah")    
     #return 'You typed {}, {}'.format(p['username'], p['password'])
 
 # @App.identity_policy()
