@@ -10,7 +10,8 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+# Need to be able to deal with bower properly
+# dist/
 downloads/
 eggs/
 lib/

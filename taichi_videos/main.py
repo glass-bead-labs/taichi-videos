@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import morepath
 from more import static
@@ -46,6 +47,8 @@ def hello_word(self, request):
     # request.include('taichi_style')
     with open('resources/index.html', 'r') as file_obj:
         result = file_obj.read()
+    with open('log.csv', 'a') as log:
+        log.write('I got a request at {}'.format(date.today()))
     return result
 
 # Example of how to get static paths... but doesn't work with nested dirs...
