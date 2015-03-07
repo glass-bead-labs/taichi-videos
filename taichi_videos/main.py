@@ -1,5 +1,6 @@
 import os
 from datetime import date
+import csv
 
 import morepath
 from more import static
@@ -42,7 +43,6 @@ class Root(object):
 @App.html(model=Root)
 def hello_word(self, request):
     request.include('bootstrap')
-    # We could further simplify by making bootstrap a bower dependency
     # Not working for some reason
     # request.include('taichi_style')
     with open('resources/index.html', 'r') as file_obj:
@@ -50,6 +50,30 @@ def hello_word(self, request):
     with open('log.csv', 'a') as log:
         log.write('I got a request at {}'.format(date.today()))
     return result
+
+@App.path(path='login')
+class Login(object):
+    def __init__(self):
+        with open('resources/example-passwords.csv') as csvfile:
+            records = csv.reader(csvfile)
+            self.passwords = {rec[0]: rec[1] for rec in records}
+
+@App.html(model=Login)
+def login_form(self, request):
+    request.include('bootstrap')
+    with open('resources/login.html', 'r') as file_obj:
+        result = file_obj.read()
+
+    return result
+
+@App.html(model=Login, request_method='POST')
+def login_validate(self, request):
+    # Replace this function body with looking up in self.passwords and activate
+    # morepath "logged in" machinery:
+    # http://morepath.readthedocs.org/en/latest/security.html#login-and-logout
+    p = request.POST
+    return 'You typed {}, {}'.format(p['username'], p['password'])
+
 
 # Example of how to get static paths... but doesn't work with nested dirs...
 
