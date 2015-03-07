@@ -55,5 +55,10 @@ docs/_build/
 target/
 
 .DS_Store
+# virtualenvs
 taichienv/
+# or
+taichi
 morepath_env/
+
+
