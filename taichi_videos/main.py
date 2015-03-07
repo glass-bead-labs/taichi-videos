@@ -78,20 +78,6 @@ def login_validate(self, request):
 # def verify_identity(identity):
 #     return user_has_password(identity.username, identity.password)
 
-# Example of how to get static paths... but doesn't work with nested dirs...
-
-# class Static(object):
-#     def __init__(self, path):
-#         self.path = path
-#
-# @App.path(model=Static, path='/static/{path}')
-# def path_name(path):
-#     return Static(path)
-#
-# @App.view(model=Static)
-# def serve_static(self, request):
-#     return self.path
-
 def main():
     config=morepath.setup()
     config.scan()
@@ -99,6 +85,3 @@ def main():
     config.commit()
     wsgi = App()
     morepath.run(wsgi)
-
-if __name__ == '__main__':
-    main()
