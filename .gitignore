@@ -10,8 +10,9 @@ __pycache__/
 env/
 build/
 develop-eggs/
-# Need to be able to deal with bower properly
-# dist/
+dist/
+# Don't ignore bower dist directories
+!bower_components/*/dist/
 downloads/
 eggs/
 lib/
@@ -58,7 +59,7 @@ target/
 # virtualenvs
 taichienv/
 # or
-taichi
+taichi/
 morepath_env/
-
+log/
 
