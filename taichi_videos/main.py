@@ -5,6 +5,7 @@ import csv
 import morepath
 from more import static
 import bowerstatic
+from morepath.security import Identity, NO_IDENTITY
 
 ## Set up our App
 
@@ -71,9 +72,28 @@ def login_validate(self, request):
     # Replace this function body with looking up in self.passwords and activate
     # morepath "logged in" machinery:
     # http://morepath.readthedocs.org/en/latest/security.html#login-and-logout
+    def user_has_password(usrnm, pwd):
+        return usrnm in self.passwords.keys() and pwd in self.passwords.values()
     p = request.POST
-    return 'You typed {}, {}'.format(p['username'], p['password'])
+    username = p['username']
+    password = p['password']
+    if not user_has_password(username, password):
+        return 'Sorry, invalid username/password combination'
+    
+    @request.after
+    def remember(response):
+        identity = morepath.Identity(username)
+        morepath.remember_identity(response, request, identity)
+    #return str("blah")    
+    #return 'You typed {}, {}'.format(p['username'], p['password'])
 
+# @App.identity_policy()
+# def get_identity_policy():
+#     return BasicAuthIdentityPolicy()
+
+# @App.verify_identity()
+# def verify_identity(identity):
+#     return user_has_password(identity.username, identity.password)
 
 # Example of how to get static paths... but doesn't work with nested dirs...
 
