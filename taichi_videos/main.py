@@ -3,30 +3,44 @@ from datetime import date
 import csv
 
 import morepath
-from more import static
-from morepath.security import Identity, NO_IDENTITY
+# from morepath.security import Identity, NO_IDENTITY
 from more.itsdangerous import IdentityPolicy
 
-from .static import all_components
+from .app import App
+# Only for side-effects (noqa disables linter warning)
+from . import static  # noqa
 
-## Set up our App
+# Security stuff
 
-# class App(morepath.App):
-class App(static.StaticApp):
+
+class ViewPermission(object):
     pass
 
-@App.static_components()
-def get_static_components():
-        return all_components
 
-## Site root
+@App.identity_policy()
+def get_identity_policy():
+    return IdentityPolicy()
+
+
+@App.verify_identity()
+def verify_identity(identity):
+    # We don't care who they are for verification
+    # If we get this far, it means we've assigned a valid identity
+    return True
+
+
+# Site root
+
 
 @App.path(path='')
 class Root(object):
     pass
 
-@App.html(model=Root)
+
+@App.html(model=Root)  # , permission=ViewPermission)
 def hello_word(self, request):
+    # if not logged in, want to:
+    return morepath.redirect(request.link(login))
     request.include('bootstrap')
     request.include('taichi_style')
 
@@ -37,11 +51,13 @@ def hello_word(self, request):
     logging.info('I got a request at {}'.format(date.today()))
     return result
 
-@App.path(path='login')
+
 class Login(object):
-    '''Simple class that has keeps all passwords in memory'''
-    def __init__(self):
-        with open('resources/example-passwords.csv') as csvfile:
+
+    '''Simple class that keeps all passwords in memory'''
+
+    def __init__(self, fname):
+        with open(fname) as csvfile:
             records = csv.reader(csvfile)
             self.passwords = {rec[0]: rec[1] for rec in records}
 
@@ -51,6 +67,16 @@ class Login(object):
             return self.passwords[usrnm] == password
         except KeyError:
             return False
+
+# We instantiate this object so we can redirect to it easily
+login = Login('resources/example-passwords.csv')
+
+
+@App.path(model=Login, path='login')
+def get_login():
+    # For now, we just return the instantiated Login object
+    return login
+
 
 @App.html(model=Login)
 def login_form(self, request):
@@ -75,22 +101,15 @@ def login_validate(self, request):
 
     return 'You typed {}, {}'.format(username, password)
 
-@App.identity_policy()
-def get_identity_policy():
-    return IdentityPolicy()
-
-@App.verify_identity()
-def verify_identity(identity):
-    # We don't care who they are for verification
-    # If we get this far, it means we've assigned a valid identity
-    return True
 
 def main():
-    logging.basicConfig(filename='log/events.csv',level=logging.INFO)
+    logging.basicConfig(filename='log/events.csv', level=logging.INFO)
 
-    config=morepath.setup()
-    config.scan()
-    config.scan(static)
-    config.commit()
+    # Now configuring to use autosetup
+    # config=morepath.setup()
+    # config.scan()
+    # config.scan(static)
+    # config.commit()
+    morepath.autosetup()
     wsgi = App()
     morepath.run(wsgi)

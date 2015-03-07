@@ -3,6 +3,8 @@
 import os
 import bowerstatic
 
+from .app import App
+
 bower = bowerstatic.Bower()
 # Currently configured to look from directory where run
 curr_dir = os.getcwd()
@@ -18,3 +20,7 @@ all_components.component(os.path.join(curr_dir, 'resources/taichi_style'),
                 # This should be changed for "production", but we're unlikely to
                 # use this code in high-volume situations.
                 version=None)
+
+@App.static_components()
+def get_static_components():
+        return all_components
