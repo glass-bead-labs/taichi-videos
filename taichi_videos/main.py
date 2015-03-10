@@ -67,6 +67,16 @@ def login_form(self, request):
 
     return result
 
+@App.path(path='signup')
+class Signup(object):
+    pass
+
+@App.html(model=Signup)
+def signup_form(self, request):
+    request.include('bootstrap')
+    with open('resources/signup.html', 'r') as file_obj:
+        result = file_obj.read()
+    return result
 @App.html(model=Login, request_method='POST')
 def login_validate(self, request):
     # Replace this function body with looking up in self.passwords and activate
