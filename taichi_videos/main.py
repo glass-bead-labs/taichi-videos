@@ -9,6 +9,11 @@ from more.itsdangerous import IdentityPolicy
 from .app import App
 # Only for side-effects (noqa disables linter warning)
 from . import static  # noqa
+import Cookie
+
+#Templating
+#from more.jinja2 import Environment, PackageLoader, Jinja2App
+
 
 # Security stuff
 
@@ -28,7 +33,6 @@ def verify_identity(identity):
     # If we get this far, it means we've assigned a valid identity
     return True
 
-
 # Site root
 
 
@@ -37,7 +41,7 @@ class Root(object):
     pass
 
 
-@App.html(model=Root)  # , permission=ViewPermission)
+@App.html(model=Root, permission=ViewPermission, name='root')
 def hello_word(self, request):
     # if not logged in, want to:
     return morepath.redirect(request.link(login))
@@ -98,19 +102,50 @@ def signup_form(self, request):
         result = file_obj.read()
     return result
 
-@App.html(model=Login, request_method='POST')
+@App.template_directory()
+def get_template_directory():
+    return 'templates'
+
+def generate_template_key_value(src):
+    with open(src) as csvfile:
+        reader = csv.reader(csvfile)
+        mydict = {row[0]:row[1] for row in reader}
+    return mydict
+
+# {
+#     'title' : "Random Tai Chi Video",
+#     'video14Description' : "This is a video of Taichi warmup",
+#     'video14Src' : "//player.vimeo.com/video/119411037",
+#     'video14Title' : "14-TAICHI-AT-HOME-PRACTICE-VIDEO"
+# }
+# env = Environment(loader=PackageLoader('taichi_videos', 'templates'))
+# template = env.get_template('index.html')
+@App.html(model=Login, request_method='POST', template = "index.jinja2")
 def login_validate(self, request):
     username = request.POST['username']
     password = request.POST['password']
     if not self.user_has_password(username, password):
         return 'Sorry, invalid username/password combination'
-
+    #C = Cookie.SimpleCookie()
     @request.after
     def remember(response):
         identity = morepath.Identity(username)
         morepath.remember_identity(response, request, identity)
+    
+    request.include('bootstrap')
+    request.include('taichi_style')
+    template_values = generate_template_key_value('resources/template-key-value.csv')
+    # with open('templates/index.html', 'r') as file_obj:
+    #     result = file_obj.read()
 
-    return 'You typed {}, {}'.format(username, password)
+    # No idea why I was having trouble with this earlier
+    #logging.info('I got a request at {}'.format(date.today()))
+    #template.render(template_values)
+    return template_values
+
+    #return 
+    #C[str(username)] = str(password)
+    #return #'You typed {}, {}'.format(username, password)
 
 
 def main():

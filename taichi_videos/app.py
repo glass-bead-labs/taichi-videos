@@ -1,6 +1,7 @@
 '''Simply set up our App so it's importable'''
 
-from more import static
+from more.static import StaticApp
+from more.jinja2 import Jinja2App
 
-class App(static.StaticApp):
+class App(StaticApp, Jinja2App):
     pass
