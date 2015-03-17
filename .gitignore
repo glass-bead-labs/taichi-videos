@@ -55,6 +55,9 @@ docs/_build/
 # PyBuilder
 target/
 
+# Vim python-mode
+.ropeproject
+
 .DS_Store
 # virtualenvs
 taichienv/

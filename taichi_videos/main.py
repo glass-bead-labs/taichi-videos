@@ -5,6 +5,7 @@ import csv
 import morepath
 # from morepath.security import Identity, NO_IDENTITY
 from more.itsdangerous import IdentityPolicy
+from webob.exc import HTTPForbidden
 
 from .app import App
 # Only for side-effects (noqa disables linter warning)
@@ -29,6 +30,11 @@ def verify_identity(identity):
     return True
 
 
+@App.view(model=HTTPForbidden)
+def redirect_to_login(self, request):
+    return morepath.redirect(request.link(login))
+
+
 # Site root
 
 
@@ -37,10 +43,9 @@ class Root(object):
     pass
 
 
-@App.html(model=Root)  # , permission=ViewPermission)
+@App.html(model=Root, permission=ViewPermission)
 def hello_word(self, request):
     # if not logged in, want to:
-    return morepath.redirect(request.link(login))
     request.include('bootstrap')
     request.include('taichi_style')
 
@@ -91,12 +96,14 @@ def login_form(self, request):
 class Signup(object):
     pass
 
+
 @App.html(model=Signup)
 def signup_form(self, request):
     request.include('bootstrap')
     with open('resources/signup.html', 'r') as file_obj:
         result = file_obj.read()
     return result
+
 
 @App.html(model=Login, request_method='POST')
 def login_validate(self, request):
