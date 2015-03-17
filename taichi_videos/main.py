@@ -11,29 +11,11 @@ from .app import App
 # Only for side-effects (noqa disables linter warning)
 from . import static  # noqa
 
-# Security stuff
+# Availible permissions
 
 
 class ViewPermission(object):
     pass
-
-
-@App.identity_policy()
-def get_identity_policy():
-    return IdentityPolicy()
-
-
-@App.verify_identity()
-def verify_identity(identity):
-    # We don't care who they are for verification
-    # If we get this far, it means we've assigned a valid identity
-    return True
-
-
-@App.view(model=HTTPForbidden)
-def redirect_to_login(self, request):
-    return morepath.redirect(request.link(login))
-
 
 # Site root
 
@@ -45,7 +27,6 @@ class Root(object):
 
 @App.html(model=Root, permission=ViewPermission)
 def hello_word(self, request):
-    # if not logged in, want to:
     request.include('bootstrap')
     request.include('taichi_style')
 
@@ -55,6 +36,9 @@ def hello_word(self, request):
     # No idea why I was having trouble with this earlier
     logging.info('I got a request at {}'.format(date.today()))
     return result
+
+
+# Login stuff
 
 
 class Login(object):
@@ -92,19 +76,6 @@ def login_form(self, request):
     return result
 
 
-@App.path(path='signup')
-class Signup(object):
-    pass
-
-
-@App.html(model=Signup)
-def signup_form(self, request):
-    request.include('bootstrap')
-    with open('resources/signup.html', 'r') as file_obj:
-        result = file_obj.read()
-    return result
-
-
 @App.html(model=Login, request_method='POST')
 def login_validate(self, request):
     username = request.POST['username']
@@ -118,6 +89,47 @@ def login_validate(self, request):
         morepath.remember_identity(response, request, identity)
 
     return 'You typed {}, {}'.format(username, password)
+
+
+@App.path(path='signup')
+class Signup(object):
+    pass
+
+
+@App.html(model=Signup)
+def signup_form(self, request):
+    request.include('bootstrap')
+    with open('resources/signup.html', 'r') as file_obj:
+        result = file_obj.read()
+    return result
+
+
+# Security stuff
+
+
+# We have a uniform permission rule for ViewPermission
+# @App.permission_rule(model=Root, permission=ViewPermission)
+# def generic_view_permission(identity, model, permission):
+#     return True
+
+
+@App.identity_policy()
+def get_identity_policy():
+    return IdentityPolicy()
+
+
+@App.verify_identity()
+def verify_identity(identity):
+    # By default, morepath rejects all identities.  We are using cookies that
+    # should ensure identities are valid, so we don't care who they are for
+    # verification.  If we get this far, it means we've assigned a valid
+    # identity.
+    return True
+
+
+@App.view(model=HTTPForbidden)
+def redirect_to_login(self, request):
+    return morepath.redirect(request.link(login))
 
 
 def main():
