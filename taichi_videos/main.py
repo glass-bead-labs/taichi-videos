@@ -1,6 +1,7 @@
 import logging
 from datetime import date
 import csv
+from csv import DictReader
 
 import morepath
 # from morepath.security import Identity, NO_IDENTITY
@@ -134,7 +135,12 @@ def login_validate(self, request):
     
     request.include('bootstrap')
     request.include('taichi_style')
-    template_values = generate_template_key_value('resources/template-key-value.csv')
+
+    with open('resources/all-videos.csv') as csvfile:
+        reader = csv.reader(csvfile)
+        myrow = [row for row in reader][1:]
+    mydict = {'id':myrow[13][0], 'title':myrow[13][1], 'src':myrow[13][2], 'desc':myrow[13][3]}
+    template_values = mydict #generate_template_key_value('resources/template-key-value.csv')
     # with open('templates/index.html', 'r') as file_obj:
     #     result = file_obj.read()
 
@@ -147,7 +153,23 @@ def login_validate(self, request):
     #C[str(username)] = str(password)
     #return #'You typed {}, {}'.format(username, password)
 
+class Video(object):
+    def __init__(self, id, title, src, desc):
+        self.id = id
+        self.title = title
+        self.src = src
+        self.desc = desc
 
+@App.path(model=Video,path='/video/{vidId}')
+with open('all-videos.csv') as csvfile:
+    reader = DictReader(csvfile)
+    rows = {row['id']:row for row in reader}
+vid = Video(vidId, rows[vidId]['title'], rows[vidId]['src'], rows[vidId]['desc'])
+return vid
+
+@App.html(model=Video, template="index.jinja2")
+def video(self):
+    return rows[self.id]
 def main():
     logging.basicConfig(filename='log/events.csv', level=logging.INFO)
 
