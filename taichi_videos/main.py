@@ -161,11 +161,12 @@ class Video(object):
         self.desc = desc
 
 @App.path(model=Video,path='/video/{vidId}')
-with open('all-videos.csv') as csvfile:
-    reader = DictReader(csvfile)
-    rows = {row['id']:row for row in reader}
-vid = Video(vidId, rows[vidId]['title'], rows[vidId]['src'], rows[vidId]['desc'])
-return vid
+def videoId(self):
+    with open('all-videos.csv') as csvfile:
+        reader = DictReader(csvfile)
+        rows = {row['id']:row for row in reader}
+    vid = Video(vidId, rows[vidId]['title'], rows[vidId]['src'], rows[vidId]['desc'])
+    return vid
 
 @App.html(model=Video, template="index.jinja2")
 def video(self):
