@@ -92,6 +92,7 @@ def get_login():
 @App.html(model=Login)
 def login_form(self, request):
     request.include('bootstrap')
+    request.include('taichi_style')
     with open('resources/login.html', 'r') as file_obj:
         result = file_obj.read()
 
