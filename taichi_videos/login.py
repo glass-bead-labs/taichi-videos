@@ -93,13 +93,18 @@ def login_validate(self, request):
         # return 'Sorry, invalid username/password combination'
         return morepath.redirect(request.link(login))
 
-    @request.after
-    def remember(response):
-        identity = morepath.Identity(username)
-        morepath.remember_identity(response, request, identity)
+    # @request.after
+    # def remember(response):
+    #     identity = morepath.Identity(username)
+    #     morepath.remember_identity(response, request, identity)
+    response = morepath.redirect('/video/14')
+    identity = morepath.Identity(username)
+    morepath.remember_identity(response, request, identity)
+
+    return response
 
     # return morepath.redirect('/video/14')
-    return 'Logged in {}'.format(username)
+    # return 'Logged in {}'.format(username)
 
 # @App.path(path='signup')
 # class Signup(object):
