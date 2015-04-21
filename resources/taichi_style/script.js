@@ -11,13 +11,13 @@ $(document).ready(function(){
 	$("#left").on('click', function(){
 		curr = parseInt(currentUrl);
 		if(currentUrl == "01"){
-			window.location.href = "http://localhost:5000/video/14"
+			window.location.href = "/video/14"
 		}
 		else if(currentUrl == "15"){
-			window.location.href = "http://localhost:5000/video/13"
+			window.location.href = "/video/13"
 		}
 		else if(currentUrl == "14"){
-			window.location.href = "http://localhost:5000/video/15"
+			window.location.href = "/video/15"
 		}	
 		else{
 			curr -= 1;
@@ -27,19 +27,19 @@ $(document).ready(function(){
 			else{
 				curr = curr.toString();
 			} 
-			window.location.href = "http://localhost:5000/video/" + curr;
+			window.location.href = "/video/" + curr;
 		}
 	});
 	$("#right").on('click', function(){
 		curr = parseInt(currentUrl);
 		if(currentUrl == "14"){
-			window.location.href = "http://localhost:5000/video/01"
+			window.location.href = "/video/01"
 		}
 		else if(currentUrl == "13"){
-			window.location.href = "http://localhost:5000/video/15"
+			window.location.href = "/video/15"
 		}
 		else if(currentUrl == "15"){
-			window.location.href = "http://localhost:5000/video/14"
+			window.location.href = "/video/14"
 		}	
 		else{
 			curr += 1;
@@ -49,7 +49,7 @@ $(document).ready(function(){
 			else{
 				curr = curr.toString();
 			}
-			window.location.href = "http://localhost:5000/video/" + curr;
+			window.location.href = "/video/" + curr;
 		}
 	});
 });
